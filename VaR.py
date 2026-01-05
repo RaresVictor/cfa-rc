@@ -43,9 +43,9 @@ hb_var = -np.percentile(pnl, (1 - confidence) * 100)
 
 # Student-t Monte Carlo VaR
 
-df, loc, scale = t.fit(r)
+dff, loc, scale = t.fit(r)
 
-simulated_t = t.rvs(df=df,loc=0,scale=scale,size=(num_simulations, horizon_days))
+simulated_t = t.rvs(dff=dff,loc=0,scale=scale,size=(num_simulations, horizon_days))
 
 cumulative_return_t = np.prod(1 + simulated_t, axis=1) - 1
 simulated_prices_t = current_price * (1 + cumulative_return_t)
