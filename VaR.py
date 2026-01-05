@@ -10,7 +10,7 @@ from scipy.stats import t
 
 def fetch_returns_and_price(ticker, start=None, end=None):
     data = yf.download(ticker, start=start, end=end,
-                       progress=False, auto_adjust=False)
+                       progress=False, auto_adjust=True)
 
     prices = data["Close"].dropna()
 
@@ -70,7 +70,7 @@ def student_t_var(returns,
     # Fit Student-t distribution (df, mean/loc, scale)
     df, loc, scale = t.fit(r)
 
-    simulated = t.rvs(df=df, loc=loc, scale=scale,
+    simulated = t.rvs(df=df, loc=0, scale=scale,
                       size=(num_simulations, horizon_days))
 
     cumulative_return = np.prod(1 + simulated, axis=1) - 1
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     # Fetch data and compute returns + last price
     returns, last_price = fetch_returns_and_price(
         ticker,
-        start="2020-01-01",
+        start="2010-01-01",
         end=None
     )
 
