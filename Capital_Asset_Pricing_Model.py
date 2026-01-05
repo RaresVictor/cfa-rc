@@ -4,7 +4,7 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 
 # Risk-free rate Romania (~7% randamentul titlurilor de stat 10Y)
-RISK_FREE_RATE = 0.07
+RISK_FREE_RATE = 0.7
 MONTHS_IN_YEAR = 12
 
 
@@ -14,7 +14,7 @@ class CAPM:
         self.bet_csv = bet_csv
         self.data = None
 
-    # 1. Download TRP data from yfinance
+    # Download TRP data 
     def load_stock(self):
         print(f"Downloading {self.stock_ticker} from yfinance...")
 
@@ -22,11 +22,11 @@ class CAPM:
             stock = yf.Ticker(self.stock_ticker)
             df = stock.history(period="max")
         except Exception as e:
-            print("Error downloading TRP:", e)
+            print("Error downloading", e)
             return None
 
         if df.empty:
-            raise ValueError("No data returned for TRP.RO")
+            raise ValueError("No data returned for TRP")
 
         # Use Close or Adj Close
         if "Adj Close" in df.columns:
@@ -36,7 +36,7 @@ class CAPM:
 
         return df
 
-    # 2. Load BET from BVB CSV
+    # Load BET from CSV
     def load_bet_csv(self):
         print(f"Loading BET from: {self.bet_csv}")
 
@@ -74,7 +74,7 @@ class CAPM:
 
         return df
 
-    # 3. Merge TRP + BET and create monthly returns
+    # Merge TRP + BET and create monthly returns
     def initialize(self):
         trp = self.load_stock()
         bet = self.load_bet_csv()
@@ -103,14 +103,14 @@ class CAPM:
         print(df.head())
         print(df.tail())
 
-    # 4. Beta (covariance)
+    # Beta (covariance)
     def beta_covariance(self):
         cov = np.cov(self.data["trp_ret"], self.data["bet_ret"])
         beta = cov[0, 1] / cov[1, 1]
         print(f"\nBeta (covariance): {beta:.4f}")
         return beta
 
-    # 5. Regression (beta + alpha + expected return CAPM)
+    # Regression (beta + alpha + expected return CAPM)
     def regression(self):
         x = self.data["bet_ret"]
         y = self.data["trp_ret"]
@@ -127,7 +127,7 @@ class CAPM:
 
         return beta, alpha, expected_return
 
-    # 6. Plot CAPM regression
+    # Plot CAPM regression
     def plot(self, beta, alpha):
         plt.figure(figsize=(12, 8))
         plt.scatter(self.data["bet_ret"], self.data["trp_ret"], alpha=0.5, label="Data Points")
@@ -142,7 +142,7 @@ class CAPM:
         plt.show()
 
 
-# Run
+# main
 if __name__ == "__main__":
     capm = CAPM("TRP.RO", "Bet.csv")
     capm.initialize()
