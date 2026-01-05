@@ -113,6 +113,6 @@ if __name__ == "__main__":
 
     print(f"Ticker: {ticker}")
     print(f"Last price: {last_price:.2f}")
-    print(f"Historical-Bootstrap Monte Carlo VaR (95%): {hb_var:.4f} (absolute currency units)")
-    print(f"Student-t Monte Carlo VaR (95%):        {t_var:.4f} (absolute currency units)")
+    print(f"Historical-Bootstrap Monte Carlo VaR (95%): {hb_var:.4f} RON per Share")
+    print(f"Student-t Monte Carlo VaR (95%):        {t_var:.4f} RON per Share")
     print(f"Fitted Student-t params: df={df:.2f}, loc={loc:.6f}, scale={scale:.6f}")
