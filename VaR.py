@@ -11,21 +11,26 @@ confidence = 0.95
 num_simulations = 50_000
 horizon_days = 1
 
+try:
+    stock = yf.Ticker(ticker)
+    df = stock.history(period="max")
+except Exception as e:
+    print("Error downloading", e)
+    df = None
 
-data = yf.download(ticker, start=start_date, auto_adjust=True, progress=False)
+if df is None or df.empty:
+    raise ValueError(f"No data returned for {ticker}")
 
-# Handle both single- and multi-index columns
-if isinstance(data.columns, pd.MultiIndex):
-    prices = data["Close"][ticker]
+if "Adj Close" in df.columns:
+    df = df[["Adj Close"]].rename(columns={"Adj Close": "stock"})
 else:
-    prices = data["Close"]
+    df = df[["Close"]].rename(columns={"Close": "stock"})
 
-prices = prices.dropna()
+# Use adjusted prices for VaR
+prices = df["stock"].dropna()
 returns = prices.pct_change().dropna()
 
 current_price = float(prices.iloc[-1])
-
-# Historical Bootstrap VaR
 r = returns.values
 
 sampled = np.random.choice(r, size=(num_simulations, horizon_days), replace=True)
